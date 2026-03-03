@@ -40,6 +40,10 @@
                     <i class="fas fa-cog"></i>
                     <span>الإعدادات المتقدمة</span>
                 </button>
+                <button class="nav-item" data-tab="contributors">
+                    <i class="fas fa-users"></i>
+                    <span>المساهمون</span>
+                </button>
                 <button class="nav-item" data-tab="about">
                     <i class="fas fa-info-circle"></i>
                     <span>من نحن</span>
@@ -320,7 +324,23 @@
                     </div>
                 </div>
             </div>
+            <!-- Contributors Tab -->
+            <div class="tab-container hidden" id="contributors-tab">
+                <div class="content-header">
+                    <div class="header-title">
+                        <h2>شركاء النجاح (المساهمون)</h2>
+                        <p>شكر خاص لكل من ساهم في تطوير وتحسين هذه الإضافة.</p>
+                    </div>
+                </div>
 
+                <div id="contributors-list" class="about-grid">
+                    <!-- Contributors will be loaded here via JavaScript -->
+                    <div class="loading-spinner" style="grid-column: 1/-1; text-align: center; padding: 40px;">
+                        <i class="fas fa-spinner fa-spin" style="font-size: 32px; color: var(--primary);"></i>
+                        <p style="margin-top: 10px;">جاري تحميل قائمة المبدعين...</p>
+                    </div>
+                </div>
+            </div>
             <!-- About Us Tab -->
             <div class="tab-container hidden" id="about-tab">
                 <div class="content-header">
