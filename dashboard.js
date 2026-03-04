@@ -225,10 +225,9 @@ function renderRecentProjects(jobs) {
 
 function setupAutofillListeners() {
     const list = document.getElementById('recentProjectsList');
-    if (!list) return;
+    if (!list || list.dataset.listenerSet) return;
 
-    // Remove existing to avoid duplicates if re-rendered
-    list.onclick = (e) => {
+    list.addEventListener('click', (e) => {
         const btn = e.target.closest('.btn-apply-autofill');
         if (!btn) return;
 
@@ -255,7 +254,8 @@ function setupAutofillListeners() {
                 window.open(urlWithFlag, '_blank');
             });
         });
-    };
+    });
+    list.dataset.listenerSet = "true";
 }
 
 function parseMinBudgetValue(budgetText) {
@@ -288,13 +288,34 @@ function renderPrompts(prompts) {
             <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
                 <h4 style="font-weight: 800; font-size: 16px; color: var(--text-title);">${p.title}</h4>
                 <div style="display: flex; gap: 8px;">
-                    <button onclick="editPrompt(${i})" class="btn-icon" style="background: none; border: none; color: var(--text-muted); cursor: pointer;"><i class="fas fa-edit"></i></button>
-                    <button onclick="deletePrompt(${i})" class="btn-icon" style="background: none; border: none; color: var(--danger); cursor: pointer;"><i class="fas fa-trash"></i></button>
+                    <button data-index="${i}" class="btn-icon btn-edit-prompt" style="background: none; border: none; color: var(--text-muted); cursor: pointer;"><i class="fas fa-edit"></i></button>
+                    <button data-index="${i}" class="btn-icon btn-delete-prompt" style="background: none; border: none; color: var(--danger); cursor: pointer;"><i class="fas fa-trash"></i></button>
                 </div>
             </div>
             <p style="font-size: 13px; color: var(--text-body); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">${p.content}</p>
         </div>
     `).join('');
+
+    setupPromptListeners();
+}
+
+function setupPromptListeners() {
+    const list = document.getElementById('promptsList');
+    if (!list || list.dataset.listenerSet) return;
+
+    list.addEventListener('click', (e) => {
+        const editBtn = e.target.closest('.btn-edit-prompt');
+        const deleteBtn = e.target.closest('.btn-delete-prompt');
+
+        if (editBtn) {
+            const index = parseInt(editBtn.dataset.index);
+            editPrompt(index);
+        } else if (deleteBtn) {
+            const index = parseInt(deleteBtn.dataset.index);
+            deletePrompt(index);
+        }
+    });
+    list.dataset.listenerSet = "true";
 }
 
 // --- Event Listeners ---
@@ -396,15 +417,15 @@ function showSaveStatus() {
 }
 
 // --- Prompt CRUD ---
-window.editPrompt = function(index) {
+function editPrompt(index) {
     chrome.storage.local.get(['prompts'], (data) => {
         const prompts = data.prompts || [];
         const p = prompts[index];
         if (p) openPromptModal(p, index);
     });
-};
+}
 
-window.deletePrompt = function(index) {
+function deletePrompt(index) {
     if (!confirm('هل أنت متأكد من حذف هذا الأمر؟')) return;
     chrome.storage.local.get(['prompts'], (data) => {
         const prompts = data.prompts || [];
@@ -414,7 +435,7 @@ window.deletePrompt = function(index) {
             showSaveStatus();
         });
     });
-};
+}
 
 function openPromptModal(prompt = null, index = -1) {
     const modal = document.getElementById('promptModal');
@@ -513,8 +534,20 @@ async function loadContributors() {
         listEl.innerHTML = `
             <div style="grid-column: 1/-1; text-align: center; padding: 20px;">
                 <p style="color: var(--danger);">عذراً، تعذر تحميل قائمة المساهمين حالياً.</p>
-                <button onclick="loadContributors()" class="btn-primary" style="margin-top: 10px; padding: 8px 16px; font-size: 12px;">إعادة المحاولة</button>
+                <button class="btn-primary btn-retry-contributors" style="margin-top: 10px; padding: 8px 16px; font-size: 12px;">إعادة المحاولة</button>
             </div>
         `;
+        setupContributorsListeners();
     }
+}
+
+function setupContributorsListeners() {
+    const list = document.getElementById('contributors-list');
+    if (!list || list.dataset.listenerSet) return;
+    list.addEventListener('click', (e) => {
+        if (e.target.closest('.btn-retry-contributors')) {
+            loadContributors();
+        }
+    });
+    list.dataset.listenerSet = "true";
 }
