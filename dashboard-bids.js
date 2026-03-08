@@ -325,9 +325,6 @@ function renderBidStatusCards(byStatus, total) {
                     <span class="bid-status-count">${count}</span>
                     <span class="bid-status-label">${config.label}</span>
                 </div>
-                <div class="bid-status-bar-wrap">
-                    <div class="bid-status-bar" style="width: ${pct}%; background: ${config.color};"></div>
-                </div>
                 <span class="bid-status-pct" style="color: ${config.color};">${pct}%</span>
             </div>
         `;
